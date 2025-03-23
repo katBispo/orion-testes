@@ -40,38 +40,39 @@ const ListDevicesPage = () => {
   useEffect(() => {
     fetchDevices();
   }, []);
-
-
- 
+  
   const handleViewMore = (serialNumber) => {
-    // Redirecionar para a página ListRainfall, passando o serialNumber como parâmetro na URL
     navigate(`/list-rainfall/${serialNumber}`);
   };
 
   return (
-    <div className="devices-container">
-      <h2>Lista de Dispositivos</h2>
-      {loading ? (
-        <p>Carregando dispositivos...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : (
-        devices.map((device) => (
-          <div key={device.serialNumber} className="device-card">
-            <h3>{device.name}</h3>
-            <p>Status: {device.status}</p>
-            <p>Última atualização: {new Date(device.lastUpdate).toLocaleString()}</p>
-
-            {/* Botão "Ver Mais" para cada dispositivo */}
-            <button
-              onClick={() => handleViewMore(device.serialNumber)}
-              id={device.serialNumber}
-            >
-              Ver Mais
-            </button>
-          </div>
-        ))
-      )}
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="p-6 w-96 bg-white shadow-lg rounded-lg">
+        {loading ? (
+          <div>Carregando dispositivos...</div>
+        ) : error ? (
+          <div>{error}</div>
+        ) : (
+          <>
+            <h1>Lista de Dispositivos</h1>
+            <div className="devices-container">
+              {devices.map((device) => (
+                <div key={device.deviceId} className="device-card">
+                  <h2>{device.deviceName}</h2>
+                  <p><strong>Status:</strong> {device.status}</p>
+                  <p><strong>Última atualização:</strong> {new Date(device.lastUpload).toLocaleString()}</p>
+                  <button 
+                    className="view-more-btn" 
+                    onClick={() => handleViewMore(device.serialNumber)}
+                  >
+                    Ver Mais
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
