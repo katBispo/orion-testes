@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import "./a.css";
 
 const ListDevicesPage = () => {
   const [token] = useState(localStorage.getItem("token") || "");
@@ -39,48 +41,37 @@ const ListDevicesPage = () => {
     fetchDevices();
   }, []);
 
+
+ 
+  const handleViewMore = (serialNumber) => {
+    // Redirecionar para a página ListRainfall, passando o serialNumber como parâmetro na URL
+    navigate(`/list-rainfall/${serialNumber}`);
+  };
+
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="p-6 w-96 bg-white shadow-lg rounded-lg">
-        {loading ? (
-          <div>Carregando dispositivos...</div>
-        ) : error ? (
-          <div>{error}</div>
-        ) : (
-          <>
-            <h1>Lista de Dispositivos</h1>
-            <table className="table-auto w-full">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nome</th>
-                  <th>Status</th>
-                  <th>Data de Instalação</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(devices) && devices.length > 0 ? (
-                  devices.map((device) => (
-                    <tr key={device.deviceId}>
-                      <td>{device.deviceId}</td>
-                      <td>{device.deviceName}</td>
-                      <td>{device.status}</td>
-                      <td>{device.dateInstalled}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center">
-                      Nenhum dispositivo encontrado
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </>
-        )}
-      </div>
-      <ToastContainer />
+    <div className="devices-container">
+      <h2>Lista de Dispositivos</h2>
+      {loading ? (
+        <p>Carregando dispositivos...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : (
+        devices.map((device) => (
+          <div key={device.serialNumber} className="device-card">
+            <h3>{device.name}</h3>
+            <p>Status: {device.status}</p>
+            <p>Última atualização: {new Date(device.lastUpdate).toLocaleString()}</p>
+
+            {/* Botão "Ver Mais" para cada dispositivo */}
+            <button
+              onClick={() => handleViewMore(device.serialNumber)}
+              id={device.serialNumber}
+            >
+              Ver Mais
+            </button>
+          </div>
+        ))
+      )}
     </div>
   );
 };
