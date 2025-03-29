@@ -4,7 +4,7 @@ import axios from "axios";
 
 const ListRainfall = () => {
   const { serialNumber } = useParams();
-  const [rainfallData, setRainfallData] = useState(null);
+  const [rainfallData, setRainfallData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -20,16 +20,20 @@ const ListRainfall = () => {
           }
         );
 
-        console.log("Dados de rainfall:", response.data);
-        
-        if (!response.data || (!response.data.sensor && !response.data.sensorSoft)) {
-          setError("Nenhum dado de rainfall encontrado para este dispositivo.");
+        console.log("Resposta completa da API:", response.data);
+
+        // Acessando a estrutura correta do JSON
+        const softSensors = response.data?.body?.data?.sensorSoft || [];
+
+        if (softSensors.length > 0) {
+          setRainfallData(softSensors);
         } else {
-          setRainfallData(response.data);
+          setError("Nenhum soft sensor encontrado para este dispositivo.");
         }
 
         setLoading(false);
       } catch (err) {
+        console.error("Erro na requisição:", err);
         setError("Erro ao carregar dados de rainfall.");
         setLoading(false);
       }
@@ -43,36 +47,54 @@ const ListRainfall = () => {
       <h1>Dados de Rainfall do Sensor {serialNumber}</h1>
       {loading && <p>Carregando...</p>}
       {error && <p>{error}</p>}
-      {rainfallData && (
-        <div>
-          <h2>Sensores Físicos</h2>
-          {rainfallData.sensor && rainfallData.sensor.length > 0 ? (
-            <ul>
-              {rainfallData.sensor.map((sensor) => (
-                <li key={sensor.sensorId}>
-                  <strong>Tipo:</strong> {sensor.sensorType} | <strong>Unidade:</strong> {sensor.uom}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>Nenhum sensor físico encontrado.</p>
-          )}
 
-          <h2>Soft Sensors</h2>
-          {rainfallData.sensorSoft && rainfallData.sensorSoft.length > 0 ? (
-            <ul>
-              {rainfallData.sensorSoft.map((softSensor) => (
-                <li key={softSensor.sensorId}>
-                  <strong>Nome:</strong> {softSensor.customName || "Sem Nome"} | 
-                  <strong> Unidade:</strong> {softSensor.uom}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>Nenhum soft sensor encontrado.</p>
-          )}
-        </div>
-      )}
+      <div className="cards-container">
+        {rainfallData.length > 0 ? (
+          rainfallData.map((softSensor) => (
+            <div key={softSensor.sensorId} className="card">
+              <h3>{softSensor.customName || "Sem Nome"}</h3>
+              <p><strong>Tipo:</strong> {softSensor.sensorType}</p>
+              <p><strong>Unidade:</strong> {softSensor.uom}</p>
+            </div>
+          ))
+        ) : (
+          !loading && <p>Nenhum soft sensor encontrado.</p>
+        )}
+      </div>
+
+      <style jsx>{`
+        .container {
+          padding: 20px;
+        }
+
+        .cards-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 15px;
+          justify-content: center;
+          margin-top: 20px;
+        }
+
+        .card {
+          background: #f8f9fa;
+          padding: 15px;
+          border-radius: 10px;
+          box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+          width: 250px;
+          text-align: center;
+        }
+
+        .card h3 {
+          margin-bottom: 10px;
+          color: #333;
+        }
+
+        .card p {
+          margin: 5px 0;
+          font-size: 14px;
+          color: #555;
+        }
+      `}</style>
     </div>
   );
 };
