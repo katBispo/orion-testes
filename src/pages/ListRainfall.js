@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const ListRainfall = () => {
   const { serialNumber } = useParams();
   const [rainfallData, setRainfallData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRainfallData = async () => {
@@ -22,7 +24,6 @@ const ListRainfall = () => {
 
         console.log("Resposta completa da API:", response.data);
 
-        // Acessando a estrutura correta do JSON
         const softSensors = response.data?.body?.data?.sensorSoft || [];
 
         if (softSensors.length > 0) {
@@ -55,6 +56,13 @@ const ListRainfall = () => {
               <h3>{softSensor.customName || "Sem Nome"}</h3>
               <p><strong>Tipo:</strong> {softSensor.sensorType}</p>
               <p><strong>Unidade:</strong> {softSensor.uom}</p>
+              <button
+                id={`sensor-${softSensor.sensorId}`}
+                className="btn-more"
+                onClick={() => navigate(`/softsensorPageAtual/${softSensor.sensorId}`)}  
+              >
+                Ver Mais
+              </button>
             </div>
           ))
         ) : (
@@ -93,6 +101,21 @@ const ListRainfall = () => {
           margin: 5px 0;
           font-size: 14px;
           color: #555;
+        }
+
+        .btn-more {
+          margin-top: 10px;
+          padding: 8px 12px;
+          border: none;
+          border-radius: 5px;
+          background-color: #007bff;
+          color: white;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        .btn-more:hover {
+          background-color: #0056b3;
         }
       `}</style>
     </div>

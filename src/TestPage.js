@@ -3,17 +3,16 @@ import axios from 'axios';
 import createApiInstance from './services/apiService';
 
 
-import { ToastContainer, toast } from 'react-toastify'; // Para as notificações de erro/sucesso
+import { ToastContainer, toast } from 'react-toastify'; 
 import { useNavigate } from 'react-router-dom';
 const TestPage = () => {
-  const [apiKey, setApiKey] = useState(""); // Para armazenar a API Key
-  const [token, setToken] = useState(localStorage.getItem("token") || ""); // Para armazenar o token, buscando no localStorage caso já tenha sido salvo
-  const [devices, setDevices] = useState([]); // Inicializando com array vazio
+  const [apiKey, setApiKey] = useState(""); 
+  const [token, setToken] = useState(localStorage.getItem("token") || ""); 
+  const [devices, setDevices] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Inicializando o hook de navegação
+  const navigate = useNavigate(); 
 
-  // Função para buscar o token
   const fetchToken = async () => {
     if (!apiKey) {
       toast.error("Por favor, insira a API Key");
@@ -21,27 +20,22 @@ const TestPage = () => {
     }
 
     try {
-      // Criando a instância do API com URL específica para a requisição do Token
       const api = createApiInstance("https://api.oriondata.io/api");
 
-      // Fazendo a requisição para a API externa
       const response = await api.get(`/Token?apiKey=${apiKey}`);
 
-      // Adicionando um log para ver a resposta da API
       console.log("Resposta da API:", response);
 
-      // Acessando corretamente o token da resposta
-      const newToken = String(response.data.token); // Convertendo explicitamente para string
-      console.log("Novo Token:", newToken); // Verifique aqui o que está sendo recebido
+      const newToken = String(response.data.token); 
+      console.log("Novo Token:", newToken); 
 
       if (newToken) {
-        setToken(newToken); // Salvando o token no estado
-        localStorage.setItem("token", newToken); // Armazenando o token no localStorage
+        setToken(newToken); 
+        localStorage.setItem("token", newToken);
         toast.success("Token validado com sucesso");
 
-        // Redireciona para a página de dispositivos após o sucesso
         setTimeout(() => {
-          fetchDevices(); // Chama a função para buscar os dispositivos
+          fetchDevices(); 
         }, 2000);
       } else {
         toast.error("Token não encontrado na resposta");
@@ -52,7 +46,6 @@ const TestPage = () => {
     }
   };
 
-  // Função para buscar os dispositivos
   const fetchDevices = async () => {
     const tokenFromLocalStorage = localStorage.getItem('token');
     console.log("Token:", tokenFromLocalStorage);
@@ -71,9 +64,8 @@ const TestPage = () => {
         },
       });
   
-      console.log("Resposta completa da API:", response.data); // LOG DA RESPOSTA PARA VERIFICAR A ESTRUTURA
+      console.log("Resposta completa da API:", response.data); 
   
-      // Garantir que `data` existe antes de acessar
       if (!response.data || !response.data.body || !response.data.body.data) {
         console.error("Dados inválidos recebidos:", response.data);
         setError("Dados inválidos recebidos da API");
@@ -81,8 +73,7 @@ const TestPage = () => {
         return;
       }
   
-      // Converte o objeto `data` para um array
-      const devicesList = Object.values(response.data.body.data);
+   const devicesList = Object.values(response.data.body.data);
   
       setDevices(devicesList);
       setLoading(false);
@@ -96,7 +87,7 @@ const TestPage = () => {
 
   useEffect(() => {
     if (token) {
-      fetchDevices(); // Chama a função para buscar os dispositivos assim que o token é salvo
+      fetchDevices(); 
     }
   }, [token]);
 

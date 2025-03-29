@@ -3,7 +3,7 @@ import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import "./a.css";
+import "../css/devices.css";
 
 const ListDevicesPage = () => {
   const [token] = useState(localStorage.getItem("token") || "");
