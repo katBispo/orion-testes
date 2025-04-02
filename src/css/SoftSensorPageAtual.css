@@ -1,37 +1,56 @@
-.container {
-    padding: 20px;
-  }
+.data-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+  gap: 16px;
+  margin-top: 20px;
+}
 
-  .data-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+.data-card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
 
-  .data-card {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: left;
-  }
+.data-card p {
+  margin: 5px 0;
+  font-size: 14px;
+}
 
-  .data-card p {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #555;
-  }
+.btn-history {
+  display: block;
+  width: 100%;
+  max-width: 250px;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
 
-  .btn-load-more {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #28a745;
-    color: white;
-    cursor: pointer;
-  }
+.btn-history:hover {
+  background-color: #0056b3;
+}
 
-  .btn-load-more:hover {
-    background-color: #218838;
-  }
+.btn-load-more {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 20px auto;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-load-more:hover {
+  background-color: #45a049;
+}
