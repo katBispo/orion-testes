@@ -1,42 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import "../css/SoftSensorPageAtual.css";
 
-// YYYY-MM-DD
 const formatDate = (date) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
 
 const SoftSensorPageAtual = () => {
     const { sensorId } = useParams();
-    const [sensorData, setSensorData] = useState(null);
+    const { softSensorId } = useParams();
 
     const [rainfallData, setRainfallData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [offset, setOffset] = useState(0);
     const [hasMoreData, setHasMoreData] = useState(true);
+    const isFetching = useRef(false);
 
     useEffect(() => {
         const fetchRainfallData = async () => {
+            if (isFetching.current || !hasMoreData) return;
+            isFetching.current = true;
+
             try {
                 const token = localStorage.getItem("token");
-
                 const endDate = new Date();
                 const startDate = new Date(endDate);
                 startDate.setDate(endDate.getDate() - 1);
-
-                // Função para formatar a data no formato YYYY-MM-DD
-                const formatDate = (date) => {
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
-                    return `${year}-${month}-${day}`;
-                };
 
                 const formattedStartDate = formatDate(startDate);
                 const formattedEndDate = formatDate(endDate);
@@ -48,9 +42,8 @@ const SoftSensorPageAtual = () => {
                     }
                 );
 
-                console.log("Resposta completa da API:", response.data);
-
-                const newData = response.data?.body?.data || [];
+                console.log("Resposta completa da API:", JSON.stringify(response.data, null, 2));
+                const newData = response.data?.body?.data?.data || [];
 
                 if (newData.length > 0) {
                     setRainfallData((prevData) => [...prevData, ...newData]);
@@ -58,23 +51,21 @@ const SoftSensorPageAtual = () => {
                 } else {
                     setHasMoreData(false);
                 }
-
-                setLoading(false);
             } catch (err) {
                 console.error("Erro na requisição:", err);
-                setError("Erro ao carregar dados de rainfall.");
+                setError("Erro ao carregar dados.");
+            } finally {
                 setLoading(false);
+                isFetching.current = false;
             }
         };
 
-        if (hasMoreData) {
-            fetchRainfallData();
-        }
-    }, [sensorId, offset, hasMoreData]); // Dependências para refazer a requisição
+        fetchRainfallData();
+    }, [sensorId, offset]);
 
     const handleLoadMore = () => {
         if (hasMoreData) {
-            setOffset(offset + 1);
+            setOffset((prevOffset) => prevOffset + 1);
         }
     };
 
@@ -88,9 +79,8 @@ const SoftSensorPageAtual = () => {
                 {rainfallData.length > 0 ? (
                     rainfallData.map((dataItem, index) => (
                         <div key={index} className="data-card">
-                            <p><strong>Data:</strong> {dataItem.date}</p>
-                            <p><strong>Valor:</strong> {dataItem.value}</p>
-                            <p><strong>Unidade:</strong> {dataItem.uom}</p>
+                            <p><strong>Data:</strong> {dataItem.readingDate}</p>
+                            <p><strong>Valor:</strong> {dataItem.sensorValue}</p>
                         </div>
                     ))
                 ) : (
@@ -103,46 +93,6 @@ const SoftSensorPageAtual = () => {
                     Carregar Mais
                 </button>
             )}
-
-            <style jsx>{`
-        .container {
-          padding: 20px;
-        }
-
-        .data-container {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        .data-card {
-          background: #f8f9fa;
-          padding: 15px;
-          border-radius: 10px;
-          box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-          text-align: left;
-        }
-
-        .data-card p {
-          margin: 5px 0;
-          font-size: 14px;
-          color: #555;
-        }
-
-        .btn-load-more {
-          margin-top: 20px;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          background-color: #28a745;
-          color: white;
-          cursor: pointer;
-        }
-
-        .btn-load-more:hover {
-          background-color: #218838;
-        }
-      `}</style>
         </div>
     );
 };

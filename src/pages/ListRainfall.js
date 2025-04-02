@@ -59,7 +59,10 @@ const ListRainfall = () => {
               <button
                 id={`sensor-${softSensor.sensorId}`}
                 className="btn-more"
-                onClick={() => navigate(`/softsensorPageAtual/${softSensor.sensorId}`)}  
+                onClick={() => {
+                  console.log("Navegando para:", `/softsensorPageAtual/${softSensor.sensorId}`);
+                  navigate(`/softsensorPageAtual/${softSensor.sensorId}`);
+                }}
               >
                 Ver Mais
               </button>
